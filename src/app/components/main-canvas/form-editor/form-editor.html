@@ -1,5 +1,17 @@
 <div class="p-4">
-   <div cdkDropList (cdkDropListDropped)="onDropRowEvent($event)" class="p-5 bg-white rounded-lg border-2 border-dashed border-gray-200">
-
-   </div>
+  @for (row of formService.rows(); track row.id) {
+  <div
+    cdkDropList
+    (cdkDropListDropped)="onDropRowEvent($event, row.id)"
+    [cdkDropListOrientation]="'mixed'"
+    class="p-5 bg-white rounded-lg border-2 border-dashed border-gray-200"
+  >
+    <div>Row</div>
+    <div class="flex gap-4 flex-wrap">
+      @for (field of row.fields; track field.id) {
+      <app-form-field class="flex-1" [field]="field"></app-form-field>
+      }
+    </div>
+  </div>
+  }
 </div>

@@ -1,6 +1,6 @@
-import { FormField } from "./fields";
+import { FormFields } from './fields';
 
 export interface FormRow {
-    id : string;
-    fields : FormField[]
+  id: string;
+  fields: FormFields[];
 }
