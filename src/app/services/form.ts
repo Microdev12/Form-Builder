@@ -20,9 +20,11 @@ export class Form {
 
   addField(field: FormFields, rowId: string, index?: number) {
     const rows = this._rows();
+    console.log(rows, 'bahar wala');
     const newRows = rows.map((ele: any) => {
       if (ele.id === rowId) {
         const updatedFields = [...ele.fields];
+        console.log(updatedFields, 'updatedFields');
         if (index !== undefined) {
           updatedFields.splice(index, 0, field);
         } else {
@@ -32,17 +34,29 @@ export class Form {
       }
       return ele;
     });
-
+    console.log(newRows);
     this._rows.set(newRows);
   }
 
   deleteField(fieldId: string) {
     const rows = this._rows();
+    console.log(rows, 'bahar wala');
     const newRows = rows.map((row) => ({
       ...row,
       fields: row.fields.filter((f) => f.id !== fieldId),
     }));
-
+    console.log(newRows, 'New Rows');
     this._rows.set(newRows);
+  }
+
+  addRow() {
+    console.log('called');
+    const newRow: FormRow = {
+      id: crypto.randomUUID(),
+      fields: [],
+    };
+
+    const rows = this._rows();
+    this._rows.set([...rows, newRow]);
   }
 }

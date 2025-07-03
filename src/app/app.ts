@@ -7,9 +7,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FieldSettings, FormElementMenu, MainCanvas, DragDropModule],
+  imports: [FieldSettings, FormElementMenu, MainCanvas, DragDropModule],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {
   protected title = 'forms';
