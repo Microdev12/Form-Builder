@@ -37,6 +37,17 @@ const CHECKBOX_FIELD_DEFINATION = {
   component: CheckboxField,
 };
 
+const TEXTAREA_FIELD_DEFINATION = {
+  type: 'textArea',
+  label: 'textArea',
+  icon: 'check_box',
+  defaultConfig: {
+    label: 'Checkbox',
+    required: false,
+  },
+  component: CheckboxField,
+};
+
 @Injectable({
   providedIn: 'root',
 })
