@@ -5,13 +5,27 @@ export interface FieldTypeDefiniation {
   label: string;
   icon: string;
   defaultConfig: any;
+  settingsConfig : fieldSettingDefinition[];
   component: Type<unknown>;
 }
 
+export interface fieldSettingDefinition {
+ type : 'text' | 'checkbox' | 'select' | 'dynamic-options';
+ key : string;
+ label : string;
+ options?: OptionItem[];
+}
+
+export interface OptionItem {
+  label : string
+  value : string
+}
 export interface FormFields {
   id: string;
   type: string;
   label: string;
   required: boolean;
   inputType?: string;
-}
+  placeholder?: string;
+  options: OptionItem[];
+} 
