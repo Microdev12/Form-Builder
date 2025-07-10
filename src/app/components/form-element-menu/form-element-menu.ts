@@ -13,7 +13,11 @@ export class FormElementMenu {
 
    fieldTypesService = inject(FieldTypes)
    fieldTypes = this.fieldTypesService.getAllFieldsValue()
-  
+
+   constructor() {
+    console.log(this.fieldTypes)
+   }
+   
    noDropAllowed(item : CdkDrag<any>) {
      return false
    }
