@@ -5,15 +5,31 @@ import { FieldTypeDefiniation, FormFields } from '../../../models/fields';
 import { FormField } from '../form-field/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-form-editor',
-  imports: [DragDropModule, FormField, MatButtonModule, MatIconModule],
+  imports: [
+    DragDropModule,
+    FormField,
+    MatFormFieldModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+    CommonModule,
+    MatInputModule,
+  ],
   templateUrl: './form-editor.html',
   styleUrl: './form-editor.scss',
 })
 export class FormEditor {
   formService = inject(Form);
+
+  rowEdit: any;
+  visible: boolean = false;
 
   onDropRowEvent(event: CdkDragDrop<any>, rowId: string) {
     console.log(event);
@@ -29,10 +45,25 @@ export class FormEditor {
       this.formService.addField(newField, rowId, event.currentIndex);
       return;
     }
- 
+
     const dragData = event.item.data as FormFields;
-    const previousRowId = event.previousContainer.data as string
-    console.log(dragData, previousRowId)
-    this.formService.moveField(dragData.id, previousRowId, rowId, event.currentIndex)
+    const previousRowId = event.previousContainer.data as string;
+    console.log(dragData, previousRowId);
+    this.formService.moveField(
+      dragData.id,
+      previousRowId,
+      rowId,
+      event.currentIndex
+    );
+  }
+
+  edit() {
+    // this.formService.editRowName(rowId, editedSectionName)
+    this.visible = true;
+  }
+
+  save(rowId: string, editedSectionName: string) {
+    this.formService.editRowName(rowId, editedSectionName);
+    this.visible = false;
   }
 }

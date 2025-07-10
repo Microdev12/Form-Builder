@@ -5,6 +5,7 @@ import { CheckboxField } from '../components/field-types/checkbox-field/checkbox
 import { SelectField } from '../components/field-types/select-field/select-field';
 import { TextAreaField } from '../components/field-types/text-area-field/text-area-field';
 import { RadioGroupField } from '../components/field-types/radio-group-field/radio-group-field';
+import { DateField } from '../components/field-types/date-field/date-field';
 
 const TEXT_FIELD_DEFINATION: FieldTypeDefiniation = {
   type: 'text',
@@ -169,6 +170,29 @@ const TEXTAREA_FIELD_DEFINATION: FieldTypeDefiniation = {
   component: TextAreaField,
 };
 
+const DATE_FIELD_DEFINATION: FieldTypeDefiniation = {
+  type: 'date',
+  label: 'Date Picker',
+  icon: 'calender_today',
+  defaultConfig: {
+    label: 'Date',
+    required: false,
+  },
+  settingsConfig: [
+    {
+      type: 'text',
+      key: 'label',
+      label: 'Label',
+    },
+    {
+      type: 'checkbox',
+      key: 'required',
+      label: 'Required',
+    },
+  ],
+  component: DateField,
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -179,6 +203,7 @@ export class FieldTypes {
     ['checkbox', CHECKBOX_FIELD_DEFINATION],
     ['select', SELECT_FIELD_DEFINATION],
     ['radio', RADIO_FIELD_DEFINATION],
+    ['date', DATE_FIELD_DEFINATION],
   ]);
 
   constructor() {}

@@ -10,13 +10,18 @@ export class Form {
   private _rows = signal<FormRow[]>([]);
   private _selectedFieldId = signal<string | null>(null);
   public readonly rows = this._rows.asReadonly();
-  
-  public readonly selectedField = computed(() => this._rows().flatMap(row => row.fields).find((f) => f.id === this._selectedFieldId()))
-  
+
+  public readonly selectedField = computed(() =>
+    this._rows()
+      .flatMap((row) => row.fields)
+      .find((f) => f.id === this._selectedFieldId())
+  );
+
   constructor() {
     this._rows.set([
       {
         id: crypto.randomUUID(),
+        sectionName: 'Row',
         fields: [],
       },
     ]);
@@ -42,6 +47,17 @@ export class Form {
     this._rows.set(newRows);
   }
 
+  editRowName(rowId: string, sectionName: string) {
+    const rows = this._rows();
+    const newRows = rows.map((ele: any) => {
+      if (ele.id === rowId) {
+        return { ...ele, sectionName }; // return a new object with updated sectionName
+      }
+      return ele; //
+    });
+    this._rows.set(newRows);
+  }
+
   deleteField(fieldId: string) {
     const rows = this._rows();
     console.log(rows, 'bahar wala');
@@ -57,6 +73,7 @@ export class Form {
     console.log('called');
     const newRow: FormRow = {
       id: crypto.randomUUID(),
+      sectionName: 'Row',
       fields: [],
     };
     const rows = this._rows();
@@ -64,61 +81,65 @@ export class Form {
   }
 
   deleteRow(rowId: string) {
-     if(this._rows().length === 1) {
-       return
-     }
-     const rows = this._rows();
-     const newRows = rows.filter(row => row.id !== rowId)
-      this._rows.set(newRows);
+    if (this._rows().length === 1) {
+      return;
+    }
+    const rows = this._rows();
+    const newRows = rows.filter((row) => row.id !== rowId);
+    this._rows.set(newRows);
   }
 
+  moveField(
+    fieldId: string,
+    sourceRowId: string,
+    targetRowId: string,
+    targetIndex: number = -1
+  ) {
+    const rows = this._rows();
 
-  moveField(fieldId : string, sourceRowId : string, targetRowId : string, targetIndex : number = -1) {
-     const rows = this._rows();
+    let fieldToMove: any;
+    let sourceRowIndex = -1;
+    let sourceFieldIndex = -1;
 
-     let fieldToMove : any;
-     let sourceRowIndex = -1;
-     let sourceFieldIndex = -1;
-
-     rows.forEach((row, rowIndex) => {
-      if(row.id === sourceRowId) {
+    rows.forEach((row, rowIndex) => {
+      if (row.id === sourceRowId) {
         sourceRowIndex = rowIndex;
-        sourceFieldIndex = row.fields.findIndex((f : any) => f.id === fieldId);
-        if(sourceFieldIndex >= 0) {
-         fieldToMove = row.fields[sourceFieldIndex];
+        sourceFieldIndex = row.fields.findIndex((f: any) => f.id === fieldId);
+        if (sourceFieldIndex >= 0) {
+          fieldToMove = row.fields[sourceFieldIndex];
         }
       }
-     });
+    });
 
-     if(!fieldToMove) return
+    if (!fieldToMove) return;
 
-     const newRows = [...rows]
-     const fieldsWithRemovedFields = newRows[sourceFieldIndex].fields.filter(f => f.id !== fieldId)
-     newRows[sourceRowIndex].fields = fieldsWithRemovedFields
+    const newRows = [...rows];
+    const fieldsWithRemovedFields = newRows[sourceFieldIndex].fields.filter(
+      (f) => f.id !== fieldId
+    );
+    newRows[sourceRowIndex].fields = fieldsWithRemovedFields;
 
-     const targetRowIndex = newRows.findIndex(r => r.id === targetRowId)
-     if(targetRowIndex >= 0) {
-       const targetFields = [...newRows[targetRowIndex].fields]
-       targetFields.splice(targetIndex, 0 , fieldToMove)
-       newRows[targetRowIndex].fields = targetFields;
-     }
+    const targetRowIndex = newRows.findIndex((r) => r.id === targetRowId);
+    if (targetRowIndex >= 0) {
+      const targetFields = [...newRows[targetRowIndex].fields];
+      targetFields.splice(targetIndex, 0, fieldToMove);
+      newRows[targetRowIndex].fields = targetFields;
+    }
 
-     this._rows.set(newRows)
+    this._rows.set(newRows);
   }
 
-  setSelectedField(fieldId : string) {
-    this._selectedFieldId.set(fieldId)
+  setSelectedField(fieldId: string) {
+    this._selectedFieldId.set(fieldId);
   }
 
-
-  updateField(fieldId : string, data : Partial<FormField>) {
+  updateField(fieldId: string, data: Partial<FormField>) {
     const row = this._rows();
-    const newRows = row.map(row => ({
+    const newRows = row.map((row) => ({
       ...row,
-      fields : row.fields.map(f => f.id === fieldId ? {...f, ...data} : f  )
-    }))
+      fields: row.fields.map((f) => (f.id === fieldId ? { ...f, ...data } : f)),
+    }));
 
-    this._rows.set(newRows)
+    this._rows.set(newRows);
   }
-
 }
