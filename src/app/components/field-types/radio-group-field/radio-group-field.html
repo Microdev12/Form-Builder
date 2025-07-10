@@ -1,0 +1,13 @@
+<label id="example-radio-group-label">{{field().label}}</label>
+<mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group" [required]="field().required">
+    @if(field().options) {
+    @for (option of field().options; track option.value) {
+    <!-- <mat-option [value]="option.value">{{option.label}}</mat-option> -->
+    <mat-radio-button class="example-radio-button" [value]="option.value">{{option.value}}</mat-radio-button>
+    }
+    } @else {
+    <mat-radio-button value="value1">Option 1</mat-radio-button>
+    <mat-radio-button value="value2">Option 2</mat-radio-button>
+    <mat-radio-button value="value3">Option 3</mat-radio-button>
+    }
+</mat-radio-group>

@@ -18,6 +18,14 @@
             class="example-margin">{{setting.label}}</mat-checkbox>
     </div>
     }
+    @case('textarea') {
+    <mat-form-field appearance="outline" class="w-full">
+        <mat-label>{{setting.label}}</mat-label>
+        <textarea matInput matInput [ngModel]="fieldValues()[setting.key]"
+            (ngModelChange)="updateField(selectedField.id, setting.key, $event)"></textarea>
+    </mat-form-field>
+    }
+    
     @case('select') {
     <mat-form-field appearance="outline" class="w-full">
         <mat-label>{{setting.label}}</mat-label>
@@ -29,8 +37,10 @@
         </mat-select>
     </mat-form-field>
     }
+    
     @case('dynamic-options') {
-    <app-dynamic-options [title]="setting.label" [option]="fieldValues()[setting.key]" (optionsChange)="updateField(selectedField.id, setting.key, $event)"></app-dynamic-options>
+    <app-dynamic-options [title]="setting.label" [options]="fieldValues()[setting.key]"
+        (optionsChange)="updateField(selectedField.id, setting.key, $event)"></app-dynamic-options>
     }
     }
     }

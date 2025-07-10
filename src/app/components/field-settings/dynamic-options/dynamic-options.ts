@@ -4,10 +4,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { OptionItem } from '../../../models/fields';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-dynamic-options',
-  imports: [MatButtonModule, MatIconModule, FormsModule, MatFormFieldModule],
+  imports: [MatButtonModule, MatIconModule, FormsModule, MatInputModule, MatFormFieldModule],
   templateUrl: './dynamic-options.html',
   styleUrl: './dynamic-options.scss'
 })

@@ -10,7 +10,7 @@ export interface FieldTypeDefiniation {
 }
 
 export interface fieldSettingDefinition {
- type : 'text' | 'checkbox' | 'select' | 'dynamic-options';
+ type : 'text' | 'checkbox' | 'select' | 'radio' | 'dynamic-options' | 'textarea';
  key : string;
  label : string;
  options?: OptionItem[];
