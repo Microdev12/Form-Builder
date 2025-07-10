@@ -14,13 +14,19 @@ const TEXT_FIELD_DEFINATION: FieldTypeDefiniation = {
   },
   settingsConfig: [
     {
-      type: 'text', key: 'label', label: 'Label'
+      type: 'text',
+      key: 'label',
+      label: 'Label',
     },
     {
-      type: 'text', key: 'placeholder', label: 'Placeholder'
+      type: 'text',
+      key: 'placeholder',
+      label: 'Placeholder',
     },
     {
-      type: 'checkbox', key: 'required', label: 'Required'
+      type: 'checkbox',
+      key: 'required',
+      label: 'Required',
     },
     {
       type: 'select',
@@ -28,20 +34,23 @@ const TEXT_FIELD_DEFINATION: FieldTypeDefiniation = {
       label: 'Input Type',
       options: [
         {
-          value: 'text', label: 'Text'
+          value: 'text',
+          label: 'Text',
         },
         {
-          value: 'number', label: 'Number'
+          value: 'number',
+          label: 'Number',
         },
         {
-          value: 'email', label: 'Email'
+          value: 'email',
+          label: 'Email',
         },
         {
-          value: 'tel', label: 'Phone'
-        }
-      ]
-    }
-
+          value: 'tel',
+          label: 'Phone',
+        },
+      ],
+    },
   ],
   component: TextField,
 };
@@ -57,17 +66,23 @@ const SELECT_FIELD_DEFINATION: FieldTypeDefiniation = {
       { value: 'option1', label: 'Option 1' },
       { value: 'option2', label: 'Option 2' },
       { value: 'option3', label: 'Option 3' },
-    ]
+    ],
   },
   settingsConfig: [
     {
-      type: 'text', key: 'label', label: 'Label'
+      type: 'text',
+      key: 'label',
+      label: 'Label',
     },
     {
-      type: 'checkbox', key: 'required', label: 'Required'
+      type: 'checkbox',
+      key: 'required',
+      label: 'Required',
     },
     {
-      type: 'dynamic-options', key: 'options', label: 'Dropdown Options'
+      type: 'dynamic-options',
+      key: 'options',
+      label: 'Dropdown Options',
     },
   ],
   component: SelectField,
@@ -83,11 +98,15 @@ const CHECKBOX_FIELD_DEFINATION: FieldTypeDefiniation = {
   },
   settingsConfig: [
     {
-      type: 'text', key: 'label', label: 'Label'
+      type: 'text',
+      key: 'label',
+      label: 'Label',
     },
     {
-      type: 'checkbox', key: 'required', label: 'Required'
-    }
+      type: 'checkbox',
+      key: 'required',
+      label: 'Required',
+    },
   ],
   component: CheckboxField,
 };
@@ -111,10 +130,10 @@ export class FieldTypes {
   fieldTypes = new Map<string, FieldTypeDefiniation>([
     ['text', TEXT_FIELD_DEFINATION],
     ['checkbox', CHECKBOX_FIELD_DEFINATION],
-    ['select',SELECT_FIELD_DEFINATION]
+    ['select', SELECT_FIELD_DEFINATION],
   ]);
 
-  constructor() { }
+  constructor() {}
 
   getFieldType(type: string): FieldTypeDefiniation | undefined {
     return this.fieldTypes.get(type);

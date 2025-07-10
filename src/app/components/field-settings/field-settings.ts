@@ -10,32 +10,37 @@ import { DynamicOptions } from './dynamic-options/dynamic-options';
 
 @Component({
   selector: 'app-field-settings',
-  imports: [DynamicOptions, MatFormFieldModule, MatInputModule, FormsModule, MatSelectModule, MatCheckboxModule],
+  imports: [
+    DynamicOptions,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatSelectModule,
+    MatCheckboxModule,
+  ],
   templateUrl: './field-settings.html',
-  styleUrl: './field-settings.scss'
+  styleUrl: './field-settings.scss',
 })
 export class FieldSettings {
-   
-  formService = inject(Form)
-  
-  fieldTypeServie = inject(FieldTypes)
+  formService = inject(Form);
+
+  fieldTypeServie = inject(FieldTypes);
 
   fieldSetting = computed(() => {
     const field = this.formService.selectedField();
-    if(!field) return [];
-    
-    const fieldDef = this.fieldTypeServie.getFieldType(field.type)
+    if (!field) return [];
+
+    const fieldDef = this.fieldTypeServie.getFieldType(field.type);
     return fieldDef?.settingsConfig || [];
-  })
- 
+  });
+
   fieldValues = computed(() => {
-    const field = this.formService.selectedField()
-    if(!field) return [];
+    const field = this.formService.selectedField();
+    if (!field) return [];
     return field as any;
-  })
+  });
 
-  updateField(fieldId : string, key : string, value : any) {
-     this.formService.updateField(fieldId, { [key]: value})
+  updateField(fieldId: string, key: string, value: any) {
+    this.formService.updateField(fieldId, { [key]: value });
   }
-
 }
