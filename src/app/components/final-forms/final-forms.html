@@ -1,0 +1,63 @@
+<!-- <form [formGroup]="form">
+  <div *ngFor="let section of sections; let i = index">
+    <h4>{{ section.sectionName }} {{ i + 1 }}</h4>
+
+    <div *ngFor="let field of section.fields" class="mb-3">
+      <ng-container *ngIf="field.type === 'text'">
+        <mat-form-field class="w-full">
+          <mat-label>{{ field.label }}</mat-label>
+          <input
+            matInput
+            [formControlName]="field.controlName"
+            [type]="field.inputType || 'text'"
+            [required]="field.required"
+            [placeholder]="field.label || ''"
+          />
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngIf="field.type === 'select'">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ field.label }}</mat-label>
+          <mat-select
+            [required]="field.required"
+            [formControlName]="field.controlName"
+          >
+            @if(field.options) { @for (option of field.options; track
+            option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            } }
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="field.type === 'checkbox'">
+        <mat-checkbox
+          [required]="field.required"
+          [formControlName]="field.controlName"
+        >
+          {{ field.label }}
+        </mat-checkbox>
+      </ng-container>
+    </div>
+    <hr />
+  </div>
+
+  <button matButton="filled" (click)="onSubmit()">Submit</button>
+</form> -->
+
+<form [formGroup]="form">
+  <div class="py-6">
+    @for (row of sections; track row.id) {
+    {{ row.sectionName }}
+    <div
+      class="p-6 flex flex-col gap-4 mb-4 shadow-md rounded-lg border border-gray-200"
+    >
+      <div class="flex gap-4 flex-wrap">
+        @for (field of row.fields; track field.id) {
+        <!-- <app-field-preview class="flex-1" [field]="field" [active]=""></app-field-preview> -->
+        }
+      </div>
+    </div>
+    }
+  </div>
+</form>

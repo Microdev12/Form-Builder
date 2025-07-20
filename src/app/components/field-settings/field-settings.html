@@ -37,6 +37,10 @@
         </mat-select>
     </mat-form-field>
     }
+
+    @case('button') {
+      <button matButton="filled" (click)="fieldValues()[setting.key]">{{setting.label}}</button>
+    }
     
     @case('dynamic-options') {
     <app-dynamic-options [title]="setting.label" [options]="fieldValues()[setting.key]"

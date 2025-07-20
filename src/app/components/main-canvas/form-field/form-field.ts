@@ -14,6 +14,7 @@ import { FieldPreview } from '../field-preview/field-preview';
 })
 export class FormField {
   field = input.required<FormFields>();
+  active = input.required<any>();
   // fieldTypeService = inject(FieldTypes);
   formServices = inject(Form);
 

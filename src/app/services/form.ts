@@ -2,6 +2,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import { FormRow } from '../models/form';
 import { FormFields } from '../models/fields';
 import { FormField } from '../components/main-canvas/form-field/form-field';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,41 @@ export class Form {
     ]);
   }
 
+  addRow() {
+    console.log('called');
+    const newRow: FormRow = {
+      id: crypto.randomUUID(),
+      sectionName: 'Row',
+      fields: [],
+    };
+    const rows = this._rows();
+    console.log(this.rows());
+    console.log(rows);
+    this._rows.set([...rows, newRow]);
+    sessionStorage.setItem('data', JSON.stringify([...rows, newRow]));
+  }
+
+  editRowName(rowId: string, sectionName: string) {
+    const rows = this._rows();
+    const newRows = rows.map((ele: any) => {
+      if (ele.id === rowId) {
+        return { ...ele, sectionName }; // return a new object with updated sectionName
+      }
+      return ele; //
+    });
+    this._rows.set(newRows);
+  }
+
+  deleteRow(rowId: string) {
+    if (this._rows().length === 1) {
+      return;
+    }
+    const rows = this._rows();
+    const newRows = rows.filter((row) => row.id !== rowId);
+    this._rows.set(newRows);
+    sessionStorage.setItem('data', JSON.stringify(newRows));
+  }
+
   addField(field: FormFields, rowId: string, index?: number) {
     const rows = this._rows();
     console.log(rows, 'bahar wala');
@@ -45,17 +81,7 @@ export class Form {
     });
     console.log(newRows);
     this._rows.set(newRows);
-  }
-
-  editRowName(rowId: string, sectionName: string) {
-    const rows = this._rows();
-    const newRows = rows.map((ele: any) => {
-      if (ele.id === rowId) {
-        return { ...ele, sectionName }; // return a new object with updated sectionName
-      }
-      return ele; //
-    });
-    this._rows.set(newRows);
+    sessionStorage.setItem('data', JSON.stringify(newRows));
   }
 
   deleteField(fieldId: string) {
@@ -67,26 +93,7 @@ export class Form {
     }));
     console.log(newRows, 'New Rows');
     this._rows.set(newRows);
-  }
-
-  addRow() {
-    console.log('called');
-    const newRow: FormRow = {
-      id: crypto.randomUUID(),
-      sectionName: 'Row',
-      fields: [],
-    };
-    const rows = this._rows();
-    this._rows.set([...rows, newRow]);
-  }
-
-  deleteRow(rowId: string) {
-    if (this._rows().length === 1) {
-      return;
-    }
-    const rows = this._rows();
-    const newRows = rows.filter((row) => row.id !== rowId);
-    this._rows.set(newRows);
+    sessionStorage.setItem('data', JSON.stringify(newRows));
   }
 
   moveField(
@@ -125,7 +132,6 @@ export class Form {
       targetFields.splice(targetIndex, 0, fieldToMove);
       newRows[targetRowIndex].fields = targetFields;
     }
-
     this._rows.set(newRows);
   }
 
@@ -141,5 +147,19 @@ export class Form {
     }));
 
     this._rows.set(newRows);
+  }
+
+  private mode$ = new BehaviorSubject<'editor' | 'preview'>('editor');
+
+  setMode(mode: 'editor' | 'preview') {
+    this.mode$.next(mode);
+  }
+
+  getMode() {
+    return this.mode$.asObservable(); // use in components
+  }
+
+  get currentMode() {
+    return this.mode$.value; // instant value if needed
   }
 }

@@ -1,16 +1,4 @@
-import { CommonModule, NgComponentOutlet } from '@angular/common';
-import {
-  Component,
-  computed,
-  inject,
-  Input,
-  input,
-  Signal,
-} from '@angular/core';
-import { Form } from '../../../services/form';
-import { FieldTypes } from '../../../services/field-types';
-import { FormFields } from '../../../models/fields';
-import { FormRow } from '../../../models/form';
+import { Component, inject, input } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -18,26 +6,40 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-// NgComponentOutlet
+import { FormRow } from '../../models/form';
+import { Form } from '../../services/form';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FieldPreview } from '../main-canvas/field-preview/field-preview';
+import { FormFields } from '../../models/fields';
+
 @Component({
-  selector: 'app-field-preview',
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './field-preview.html',
-  styleUrl: './field-preview.scss',
+  selector: 'app-final-forms',
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    FieldPreview,
+  ],
+  templateUrl: './final-forms.html',
+  styleUrl: './final-forms.scss',
 })
-export class FieldPreview {
+export class FinalForms {
+  formService = inject(Form);
   field = input.required<FormFields>();
-  fieldTypeService = inject(FieldTypes);
-  // @Input() active!: Signal<'preview' | 'editor'>;
-  formServices = inject(Form);
-  // activeValue = computed(() => this.active?.() ?? 'editor');
-  previewComponent = computed(() => {
-    const type = this.fieldTypeService.getFieldType(this.field().type);
-    return type?.component ?? null;
-  });
-  rows: any;
-  sections!: FormRow[];
-  form!: FormGroup<any>;
+  activeTab = input.required<any>();
+  sections: FormRow[] = [];
+  form!: FormGroup;
+
+  rows: FormRow[] = [];
 
   constructor(private fb: FormBuilder) {
     this.rows = JSON.parse(sessionStorage.getItem('data') || '[]');
@@ -47,7 +49,6 @@ export class FieldPreview {
     console.log(this.rows);
     this.sections = this.addControlNames(this.rows);
     this.buildForm();
-    //console.log(this.active());
   }
 
   addControlNames(sections: FormRow[]): FormRow[] {

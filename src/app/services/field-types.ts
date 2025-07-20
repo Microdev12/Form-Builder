@@ -6,6 +6,7 @@ import { SelectField } from '../components/field-types/select-field/select-field
 import { TextAreaField } from '../components/field-types/text-area-field/text-area-field';
 import { RadioGroupField } from '../components/field-types/radio-group-field/radio-group-field';
 import { DateField } from '../components/field-types/date-field/date-field';
+import { TableField } from '../components/field-types/table-field/table-field';
 
 const TEXT_FIELD_DEFINATION: FieldTypeDefiniation = {
   type: 'text',
@@ -193,6 +194,34 @@ const DATE_FIELD_DEFINATION: FieldTypeDefiniation = {
   component: DateField,
 };
 
+const TABLE_FIELD_DEFINATION: FieldTypeDefiniation = {
+  type: 'table',
+  label: 'Table ',
+  icon: 'Table',
+  defaultConfig: {
+    label: 'Table',
+    required: false,
+  },
+  settingsConfig: [
+    {
+      type: 'text',
+      key: 'label',
+      label: 'Column Name',
+    },
+    {
+      type: 'checkbox',
+      key: 'required',
+      label: 'Without Input',
+    },
+    {
+      type: 'button',
+      key: 'addColumn()',
+      label: 'Add Column',
+    },
+  ],
+  component: TableField,
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -204,6 +233,7 @@ export class FieldTypes {
     ['select', SELECT_FIELD_DEFINATION],
     ['radio', RADIO_FIELD_DEFINATION],
     ['date', DATE_FIELD_DEFINATION],
+    ['table', TABLE_FIELD_DEFINATION],
   ]);
 
   constructor() {}
