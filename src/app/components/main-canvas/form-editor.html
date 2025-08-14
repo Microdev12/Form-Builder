@@ -1,0 +1,51 @@
+<div class="p-4">
+  @for (row of formService.rows(); track row.id) {
+  <div
+    cdkDropList
+    [cdkDropListData]="row.id"
+    (cdkDropListDropped)="onDropRowEvent($event, row.id)"
+    [cdkDropListOrientation]="'mixed'"
+    class="p-5 mb-4 bg-white rounded-lg border-2 border-dashed border-gray-200"
+  >
+    <div class="flex justify-between items-center">
+      <p *ngIf="!visible">
+        <span> {{ row.sectionName }} </span>
+        <span (click)="edit()">
+          <mat-icon>edit</mat-icon>
+        </span>
+      </p>
+
+      <div>
+        <mat-form-field class="example-full-width" *ngIf="visible">
+          <mat-label>Edit Row</mat-label>
+          <input matInput placeholder="Enter section" [(ngModel)]="rowEdit" />
+        </mat-form-field>
+
+        <button mat-icon-button (click)="save(row.id, rowEdit)">
+          <mat-icon>save</mat-icon>
+        </button>
+      </div>
+
+      <button mat-icon-button (click)="formService.deleteRow(row.id)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="flex gap-4 flex-wrap">
+      @for (field of row.fields; track field.id) {
+      <app-form-field
+        cdkDrag
+        [cdkDragData]="field"
+        class="flex-1"
+        [field]="field"
+      ></app-form-field>
+      }@empty {
+      <div
+        class="w-full p-4 border border-dashed border-primary-container rounded-lg border-gray-200"
+      >
+        Drag n drop form element.
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>

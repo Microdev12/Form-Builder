@@ -2,7 +2,8 @@ import { computed, Injectable, signal } from '@angular/core';
 import { FormRow } from '../models/form';
 import { FormFields } from '../models/fields';
 import { FormField } from '../components/main-canvas/form-field/form-field';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -17,8 +18,9 @@ export class Form {
       .flatMap((row) => row.fields)
       .find((f) => f.id === this._selectedFieldId())
   );
+  getFullObject: any;
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this._rows.set([
       {
         id: crypto.randomUUID(),
@@ -139,6 +141,25 @@ export class Form {
     this._selectedFieldId.set(fieldId);
   }
 
+  updateTableColumnName(fieldId: any, tableRow: any) {
+    console.log(fieldId, tableRow);
+    this.getFullObject = this.rows();
+    const row = this.rows;
+    // const row = this._rows();
+    const updateOption = this.getFullObject.map((section: any) => {
+      console.log(section);
+      section.fields.forEach((field: any) => {
+        console.log(field);
+        if (field.id === fieldId && field.type === 'table') {
+          field.options = [{ ...tableRow.rows[0] }]; // Spread to keep it clean & safe
+        }
+      });
+    });
+
+    this._rows.set(updateOption);
+    console.log(updateOption);
+  }
+
   updateField(fieldId: string, data: Partial<FormField>) {
     const row = this._rows();
     const newRows = row.map((row) => ({
@@ -161,5 +182,20 @@ export class Form {
 
   get currentMode() {
     return this.mode$.value; // instant value if needed
+  }
+
+  saveForm(payload: any) {
+    return this.http
+      .post(
+        'http://localhost:4300/api/busbooking/bus/route/createFormBuilder',
+        payload
+      )
+      .pipe(map((response) => response || 'Success'));
+  }
+
+  getForm() {
+    return this.http
+      .get('http://localhost:4300/api/busbooking/bus/route/getFormBuilder')
+      .pipe(map((response) => response || 'Success'));
   }
 }

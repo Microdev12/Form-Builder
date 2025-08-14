@@ -7,6 +7,8 @@ import { TextAreaField } from '../components/field-types/text-area-field/text-ar
 import { RadioGroupField } from '../components/field-types/radio-group-field/radio-group-field';
 import { DateField } from '../components/field-types/date-field/date-field';
 import { TableField } from '../components/field-types/table-field/table-field';
+import { TimerField } from '../components/field-types/timer-field/timer-field';
+import { ButtonField } from '../components/field-types/button-field/button-field';
 
 const TEXT_FIELD_DEFINATION: FieldTypeDefiniation = {
   type: 'text',
@@ -201,6 +203,11 @@ const TABLE_FIELD_DEFINATION: FieldTypeDefiniation = {
   defaultConfig: {
     label: 'Table',
     required: false,
+    options: [
+      { value: 'option1', label: 'Option 1' },
+      { value: 'option2', label: 'Option 2' },
+      { value: 'option3', label: 'Option 3' },
+    ],
   },
   settingsConfig: [
     {
@@ -222,6 +229,74 @@ const TABLE_FIELD_DEFINATION: FieldTypeDefiniation = {
   component: TableField,
 };
 
+const TIMER_FIELD_DEFINATION: FieldTypeDefiniation = {
+  type: 'timer',
+  label: 'TimePicker',
+  icon: '',
+  defaultConfig: {
+    label: 'Timer',
+    required: false,
+  },
+  settingsConfig: [
+    {
+      type: 'text',
+      key: 'label',
+      label: 'Column Name',
+    },
+    {
+      type: 'checkbox',
+      key: 'required',
+      label: 'Required',
+    },
+    // {
+    //   type: 'button',
+    //   key: 'addColumn()',
+    //   label: 'Add Column',
+    // },
+    {
+      type: 'select',
+      key: 'inputType',
+      label: 'Time Picker',
+      options: [
+        {
+          value: '1min',
+          label: '1 min',
+        },
+        {
+          value: '2min',
+          label: '2 min',
+        },
+        {
+          value: '5min',
+          label: '5 min',
+        },
+        {
+          value: '15min',
+          label: '15 min',
+        },
+      ],
+    },
+  ],
+  component: TimerField,
+};
+
+const BUTTON_FIELD_DEFINATION: FieldTypeDefiniation = {
+  type: 'button',
+  label: 'Button',
+  icon: '',
+  defaultConfig: {
+    label: 'Button',
+    required: false,
+  },
+  settingsConfig: [
+    {
+      type: 'text',
+      key: 'label',
+      label: 'Label',
+    },
+  ],
+  component: ButtonField,
+};
 @Injectable({
   providedIn: 'root',
 })
@@ -233,6 +308,8 @@ export class FieldTypes {
     ['select', SELECT_FIELD_DEFINATION],
     ['radio', RADIO_FIELD_DEFINATION],
     ['date', DATE_FIELD_DEFINATION],
+    ['timer', TIMER_FIELD_DEFINATION],
+    ['button', BUTTON_FIELD_DEFINATION],
     ['table', TABLE_FIELD_DEFINATION],
   ]);
 

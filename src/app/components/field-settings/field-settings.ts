@@ -43,6 +43,7 @@ export class FieldSettings {
   });
 
   updateField(fieldId: string, key: string, value: any) {
+    console.log(fieldId, key, value);
     this.formService.updateField(fieldId, { [key]: value });
   }
 }

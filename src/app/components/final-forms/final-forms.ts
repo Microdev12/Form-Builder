@@ -16,6 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FieldPreview } from '../main-canvas/field-preview/field-preview';
 import { FormFields } from '../../models/fields';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-final-forms',
@@ -34,21 +35,37 @@ import { FormFields } from '../../models/fields';
 })
 export class FinalForms {
   formService = inject(Form);
-  field = input.required<FormFields>();
-  activeTab = input.required<any>();
+  //field = input.required<FormFields>();
+  //activeTab = input.required<any>();
   sections: FormRow[] = [];
   form!: FormGroup;
 
   rows: FormRow[] = [];
 
-  constructor(private fb: FormBuilder) {
-    this.rows = JSON.parse(sessionStorage.getItem('data') || '[]');
+  constructor(private fb: FormBuilder, private http: HttpClient) {
+    // this.rows = JSON.parse(sessionStorage.getItem('data') || '[]');
+    this.getFormValues();
   }
 
   ngOnInit(): void {
-    console.log(this.rows);
-    this.sections = this.addControlNames(this.rows);
-    this.buildForm();
+    // console.log(this.rows);
+    // this.sections = this.addControlNames(this.rows);
+    // console.log(this.sections);
+    // this.getFormValues();
+  }
+
+  getFormValues() {
+    this.formService.getForm().subscribe(
+      (response: any) => {
+        console.log(response[response.length - 1].data);
+        this.rows = response[response.length - 1].data;
+        this.sections = this.addControlNames(this.rows);
+        this.buildForm();
+      },
+      (err: any) => {
+        console.log(err.message);
+      }
+    );
   }
 
   addControlNames(sections: FormRow[]): FormRow[] {

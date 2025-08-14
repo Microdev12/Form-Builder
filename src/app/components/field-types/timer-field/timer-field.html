@@ -1,0 +1,6 @@
+<mat-form-field>
+  <mat-label>{{ field().label }}</mat-label>
+  <input matInput [matTimepicker]="minutesPicker" />
+  <mat-timepicker-toggle matIconSuffix [for]="minutesPicker" />
+  <mat-timepicker [interval]="field().inputType || '5min'" #minutesPicker />
+</mat-form-field>

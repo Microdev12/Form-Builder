@@ -13,5 +13,18 @@ import { CommonModule } from '@angular/common';
 export class FormPreview {
   formService = inject(Form);
   // @Input() activeTab!: Signal<'preview' | 'editor'>;
-  save() {}
+  save() {
+    let obj = {
+      data: this.formService.rows(),
+    };
+    console.log(obj);
+    this.formService.saveForm(obj).subscribe(
+      (res: any) => {
+        console.log(res);
+      },
+      (err: any) => {
+        console.log(err);
+      }
+    );
+  }
 }

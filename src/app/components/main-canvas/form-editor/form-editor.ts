@@ -58,7 +58,11 @@ export class FormEditor {
   }
 
   edit() {
+    // console.log(row, rowId);
     // this.formService.editRowName(rowId, editedSectionName)
+    // if ((row.id = rowId)) {
+
+    // }
     this.visible = true;
   }
 

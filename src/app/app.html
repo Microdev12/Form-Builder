@@ -1,5 +1,8 @@
 <div>
-  <button matButton="filled" (click)="onNavigate()">navigate</button>
+  <button matButton="filled" class="me-2" (click)="onNavigate()">
+    navigate
+  </button>
+  <button matButton="filled" (click)="onNavigate()">Back</button>
 </div>
 
 <div class="flex flex-col h-screen bg-gray-100 px-4">
@@ -10,6 +13,6 @@
   </div>
 
   <div *ngIf="!show">
-    <!-- <app-final-forms></app-final-forms> -->
+    <app-final-forms></app-final-forms>
   </div>
 </div>
