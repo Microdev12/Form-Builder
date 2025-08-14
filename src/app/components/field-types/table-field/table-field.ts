@@ -40,41 +40,73 @@ import { Form } from '../../../services/form';
   styleUrl: './table-field.scss',
 })
 export class TableField {
-   columnName : string = ''
-   field = input.required<FormFields>();
+  columnName: string = '';
+  field = input.required<FormFields>();
+  formService = inject(Form);
+  editableColumnNames: string[] = [];
+  editingColumn: any;
+  mode: string = 'editor';
 
-   formService = inject(Form)
-//  @Input() field : any
   constructor() {
-//console.log(this.field())
+    this.formService.getMode().subscribe((mode) => {
+      console.log('Mode changed:', mode);
+      this.mode = mode;
+    });
   }
 
-  getDisplayedColumns(table: any): string[] {
-  return table.columns.map((c : any) => c.field);
-}
+  ngOnInit() {
+    const cols = this.field().columns ?? [];
+    this.editableColumnNames = [...cols];
+    this.editingColumn = new Array(cols.length).fill(false);
+  }
 
- addColumn(fieldId: string) {
-  const newKey = `col_${Date.now()}`; // or any naming logic
-  this.formService.addColumnToTableField(fieldId, newKey);
-}
+  startEditing(index: number) {
+    this.editingColumn[index] = true;
+  }
 
-// renameColumn(fieldId: string, oldKey: string, newKey: string) {
-//   const trimmedKey = newKey.trim();
-//   if (trimmedKey && trimmedKey !== oldKey) {
-//     this.formService.renameColumnInTableField(fieldId, oldKey, trimmedKey);
-//   }
-// }
+  private syncEditingArray() {
+    const cols = this.field().columns ?? [];
+    this.editingColumn = new Array(cols.length).fill(false);
+  }
 
- renameColumn(fieldId: string, oldCol: string, newCol: string) {
-    if (oldCol !== newCol && newCol.trim() !== '') {
-     // this.formService.renameColumnInTableField(fieldId, oldCol, newCol.trim());
+  saveColumnName(
+    fieldId: string,
+    oldKey: string,
+    newName: string,
+    index: number
+  ) {
+    if (newName && oldKey !== newName) {
+      this.renameColumn(fieldId, oldKey, newName);
     }
+    this.editingColumn[index] = false; // hide input
   }
- 
+  getDisplayedColumns(table: any): string[] {
+    return table.columns.map((c: any) => c.field);
+  }
+
+  addColumn(fieldId: string) {
+    const newKey = `col_${Date.now()}`; // or any naming logic
+    this.formService.addColumnToTableField(fieldId, newKey);
+    this.syncEditingArray();
+  }
+
+  renameColumn(fieldId: string, oldKey: string, newName: string) {
+    if (!newName || oldKey === newName) return;
+
+    this.formService.renameColumnInTableField(fieldId, oldKey, newName);
+    this.syncEditingArray();
+  }
+
+  deleteColumn(fieldId: string, columnKey: string) {
+    this.formService.deleteColumnFromTableField(fieldId, columnKey);
+  }
+
   addRow() {
-
-    console.log('pico')
-   // this.tableService.addRow(table)
+    console.log('pico');
+    this.formService.addRowToTableField(this.field().id);
   }
 
+  deleteRow(fieldId: string, rowIndex: number) {
+    this.formService.deleteRowFromTableField(fieldId, rowIndex);
+  }
 }

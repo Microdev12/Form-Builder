@@ -80,8 +80,7 @@
     <button mat-raised-button color="warn" (click)="addRow(field().id)">Submit</button>
 </div> -->
 
-
-<div>
+<!-- <div>
   <table mat-table [dataSource]="field().options">
     <ng-container *ngFor="let column of field().columns ?? []" [matColumnDef]="column">
       <th mat-header-cell *matHeaderCellDef>
@@ -97,30 +96,127 @@
 
   <button matButton="filled" (click)="addColumn(field().id)">Add Column</button>
   <button matButton="filled" color="primary" (click)="addRow()">Add Row</button>
-</div>
+</div> -->
 
-
-<!-- <div>
+<div>
   <table mat-table [dataSource]="field().options">
-    <ng-container *ngFor="let column of field().columns ?? []; let colIndex = index" [matColumnDef]="column">
+    <!-- Dynamic Columns -->
+    <ng-container
+      *ngFor="let column of field().columns ?? []; let colIndex = index"
+      [matColumnDef]="column"
+    >
       <th mat-header-cell *matHeaderCellDef>
-        <input
-          matInput
-          [(ngModel)]="editableColumns[colIndex]"
-          (blur)="renameColumn(field().id, column, editableColumns[colIndex])"
-          placeholder="Column name"
-          style="width: 120px;"
-        />
+        <div
+          *ngIf="!editingColumn[colIndex] && this.mode == 'editor'"
+          class="column-display"
+          (click)="startEditing(colIndex)"
+        >
+          {{ editableColumnNames[colIndex] || "Unnamed Column" }}
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="startEditing(colIndex)"
+            *ngIf="mode == 'editor'"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+
+        <mat-form-field
+          *ngIf="editingColumn[colIndex] && this.mode == 'editor'"
+          class="col-editor"
+          appearance="outline"
+        >
+          <input
+            matInput
+            [(ngModel)]="editableColumnNames[colIndex]"
+            (blur)="
+              saveColumnName(
+                field().id,
+                column,
+                editableColumnNames[colIndex],
+                colIndex
+              )
+            "
+            (keyup.enter)="
+              saveColumnName(
+                field().id,
+                column,
+                editableColumnNames[colIndex],
+                colIndex
+              )
+            "
+            placeholder="Column"
+            cdkFocusInitial
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            color="warn"
+            (click)="deleteColumn(field().id, column)"
+            aria-label="Delete column"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <div *ngIf="this.mode == 'preview'">
+          {{ editableColumnNames[colIndex] || "Unnamed Column" }}
+        </div>
       </th>
       <td mat-cell *matCellDef="let element">
-        {{ element[column] }}
+        <mat-form-field
+          class="col-editor"
+          appearance="outline"
+          *ngIf="!field().required"
+        >
+          <input
+            matInput
+            [(ngModel)]="element[column]"
+            placeholder="Column"
+            cdkFocusInitial
+          />
+        </mat-form-field>
+        <p *ngIf="field().required">{{ element[column] }}</p>
       </td>
     </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="field().columns ?? []"></tr>
-    <tr mat-row *matRowDef="let row; columns: field().columns ?? []"></tr>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let row; let rowIndex = index">
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteRow(field().id, rowIndex)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+    <!-- Header & Row definitions -->
+    <tr
+      mat-header-row
+      *matHeaderRowDef="(field().columns ?? []).concat(['actions'])"
+    ></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: (field().columns ?? []).concat(['actions'])"
+    ></tr>
   </table>
 
-  <button mat-button (click)="addColumn(field().id)">Add Column</button>
-  <button mat-button color="primary" (click)="addRow()">Add Row</button>
-</div> -->
+  <button
+    mat-button
+    *ngIf="mode == 'editor'"
+    color="primary"
+    (click)="addColumn(field().id)"
+  >
+    Add Column
+  </button>
+  <button
+    mat-button
+    *ngIf="mode == 'preview'"
+    color="accent"
+    (click)="addRow()"
+  >
+    Add Row
+  </button>
+</div>

@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { FormRow } from '../models/form';
- import { FormFields } from '../models/fields';
+import { FormFields } from '../models/fields';
 import { FormField } from '../components/main-canvas/form-field/form-field';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 
@@ -55,7 +55,7 @@ export class Form {
         sectionName: 'Row',
         fields: [],
       },
-    ]) 
+    ]);
   }
 
   addRow() {
@@ -68,7 +68,7 @@ export class Form {
     const rows = this._rows();
     console.log(this.rows());
     console.log(rows);
-    this._rows.set(([...rows, newRow]) as unknown as FormRow[]);
+    this._rows.set([...rows, newRow] as unknown as FormRow[]);
     sessionStorage.setItem('data', JSON.stringify([...rows, newRow]));
   }
 
@@ -97,7 +97,10 @@ export class Form {
     // Type guard for TableField
     if (field.type === 'table') {
       // Ensure options is an array of objects (not OptionItem)
-      if (!Array.isArray(field.options) || field.options.some(opt => 'label' in opt && 'value' in opt)) {
+      if (
+        !Array.isArray(field.options) ||
+        field.options.some((opt) => 'label' in opt && 'value' in opt)
+      ) {
         field.options = [];
       }
       // Ensure columns exists
@@ -106,7 +109,10 @@ export class Form {
       }
     } else {
       // StandardField: ensure options is OptionItem[]
-      if (field.options && field.options.some(opt => !('label' in opt && 'value' in opt))) {
+      if (
+        field.options &&
+        field.options.some((opt) => !('label' in opt && 'value' in opt))
+      ) {
         field.options = [];
       }
     }
@@ -123,7 +129,7 @@ export class Form {
       }
       return ele;
     });
-    this._rows.set((newRows) as unknown as FormRow[]);
+    this._rows.set(newRows as unknown as FormRow[]);
     sessionStorage.setItem('data', JSON.stringify(newRows));
   }
 
@@ -189,14 +195,24 @@ export class Form {
       fields: row.fields.map((f) => {
         if (f.id === fieldId) {
           // Type guard for TableField
-          if (f.type === 'table' && 'options' in data && Array.isArray(data.options)) {
+          if (
+            f.type === 'table' &&
+            'options' in data &&
+            Array.isArray(data.options)
+          ) {
             // Only allow array of objects for table field options
-            if (data.options.some(opt => 'label' in opt && 'value' in opt)) {
+            if (data.options.some((opt) => 'label' in opt && 'value' in opt)) {
               return { ...f, ...data, options: [] };
             }
-          } else if (f.type !== 'table' && 'options' in data && Array.isArray(data.options)) {
+          } else if (
+            f.type !== 'table' &&
+            'options' in data &&
+            Array.isArray(data.options)
+          ) {
             // Only allow OptionItem[] for standard field options
-            if (data.options.some(opt => !('label' in opt && 'value' in opt))) {
+            if (
+              data.options.some((opt) => !('label' in opt && 'value' in opt))
+            ) {
               return { ...f, ...data, options: [] };
             }
           }
@@ -205,84 +221,149 @@ export class Form {
         return f;
       }),
     }));
-    this._rows.set((newRows) as unknown as FormRow[]);
+    this._rows.set(newRows as unknown as FormRow[]);
   }
 
   // Column Logic
 
   addColumnToTableField(fieldId: string, newColumnKey: string) {
-  const rows = this._rows();
-  const updatedRows = rows.map(row => {
-    const updatedFields = row.fields.map(f => {
-      if (f.id === fieldId && f.type === 'table') {
-        // Ensure columns array exists
-        const columns = f.columns ?? [];
-        const newColumns = [...columns, newColumnKey];
+    const rows = this._rows();
+    const updatedRows = rows.map((row) => {
+      const updatedFields = row.fields.map((f) => {
+        if (f.id === fieldId && f.type === 'table') {
+          // Ensure columns array exists
+          const columns = f.columns ?? [];
+          const newColumns = [...columns, newColumnKey];
 
-        // Ensure options array exists (row data)
-        const options = Array.isArray(f.options) ? f.options : [];
+          // Ensure options array exists (row data)
+          const options = Array.isArray(f.options) ? f.options : [];
 
-        // Add the new column key to each row's data with empty value
-        const updatedOptions = options.map(rowObj => ({
-          ...rowObj,
-          [newColumnKey]: ''
-        }));
+          // Add the new column key to each row's data with empty value
+          const updatedOptions = options.map((rowObj) => ({
+            ...rowObj,
+            [newColumnKey]: '',
+          }));
 
-        return {
-          ...f,
-          columns: newColumns,
-          options: updatedOptions
-        };
-      }
-      return f;
+          return {
+            ...f,
+            columns: newColumns,
+            options: updatedOptions,
+          };
+        }
+        return f;
+      });
+
+      return { ...row, fields: updatedFields };
     });
 
-    return { ...row, fields: updatedFields };
-  });
+    this._rows.set(updatedRows);
+    sessionStorage.setItem('data', JSON.stringify(updatedRows));
+  }
 
-  this._rows.set(updatedRows);
-  sessionStorage.setItem('data', JSON.stringify(updatedRows));
-}
+  renameColumnInTableField(fieldId: string, oldKey: string, newKey: string) {
+    const rows = this._rows();
+    const updatedRows = rows.map((row) => {
+      const updatedFields = row.fields.map((f) => {
+        if (f.id === fieldId && f.type === 'table') {
+          const newColumns =
+            f.columns?.map((c) => (c === oldKey ? newKey : c)) ?? [];
 
+          const newOptions = (f.options ?? []).map((rowObj) => {
+            const { [oldKey]: oldValue, ...rest } = rowObj as any;
+            return { ...rest, [newKey]: oldValue };
+          });
 
-// renameColumnInTableField(fieldId: string, oldColumnKey: string, newColumnKey: string) {
-//     const updatedRows = this._rows().map(row => {
-//       const updatedFields = row.fields.map(f => {
-//         if (f.id === fieldId && f.type === 'table' && f.columns) {
-//           const updatedColumns = f.columns.map(col =>
-//             col === oldColumnKey ? newColumnKey : col
-//           );
+          return {
+            ...f,
+            columns: newColumns,
+            options: newOptions,
+          };
+        }
+        return f;
+      });
+      return { ...row, fields: updatedFields };
+    });
 
-//           // const updatedOptions = (Array.isArray(f.options) ? f.options : [])
-//           //   .map((rowObj: Record<string, any>) => {
-//           //     if (Object.prototype.hasOwnProperty.call(rowObj, oldColumnKey)) {
-//           //       const { [oldColumnKey]: oldValue, ...rest } = rowObj;
-//           //       return { ...rest, [newColumnKey]: oldValue };
-//           //     }
-//           //     return rowObj;
-//           //   });
+    this._rows.set(updatedRows);
+    console.log(this.rows());
+    sessionStorage.setItem('data', JSON.stringify(updatedRows));
+  }
 
-//           return {
-//             ...f,
-//             columns: updatedColumns,
-//             // options: updatedOptions
-//           };
-//         }
-//         return f;
-//       });
+  deleteColumnFromTableField(fieldId: string, columnKey: string) {
+    const rows = this._rows();
+    const updatedRows = rows.map((row) => {
+      const updatedFields = row.fields.map((f) => {
+        if (f.id === fieldId && f.type === 'table') {
+          const newColumns = (f.columns ?? []).filter((c) => c !== columnKey);
 
-//       return { ...row, fields: updatedFields };
-//     });
+          const newOptions = (f.options ?? []).map((rowObj) => {
+            const { [columnKey]: _, ...rest } = rowObj as any;
+            return rest;
+          });
 
-//     this._rows.set(updatedRows);
-//     sessionStorage.setItem('data', JSON.stringify(updatedRows));
-//   }
+          return {
+            ...f,
+            columns: newColumns,
+            options: newOptions,
+          };
+        }
+        return f;
+      });
+      return { ...row, fields: updatedFields };
+    });
 
+    this._rows.set(updatedRows);
+    sessionStorage.setItem('data', JSON.stringify(updatedRows));
+  }
 
-  
+  addRowToTableField(fieldId: string) {
+    const rows = this._rows();
+    const updatedRows = rows.map((row) => {
+      const updatedFields = row.fields.map((f) => {
+        if (f.id === fieldId && f.type === 'table') {
+          // Ensure options array exists
+          const options = Array.isArray(f.options) ? f.options : [];
 
+          // Create a new row object with all columns empty
+          const newRow: any = {};
+          (f.columns ?? []).forEach((col) => {
+            newRow[col] = '';
+          });
 
+          return {
+            ...f,
+            options: [...options, newRow],
+          };
+        }
+        return f;
+      });
 
+      return { ...row, fields: updatedFields };
+    });
+    console.log(this.rows());
+    this._rows.set(updatedRows);
+    sessionStorage.setItem('data', JSON.stringify(updatedRows));
+  }
+
+  deleteRowFromTableField(fieldId: string, rowIndex: number) {
+    const rows = this._rows();
+    const updatedRows = rows.map((row) => {
+      const updatedFields = row.fields.map((f) => {
+        if (f.id === fieldId && f.type === 'table') {
+          const options = Array.isArray(f.options) ? f.options : [];
+          return {
+            ...f,
+            options: options.filter((_, idx) => idx !== rowIndex),
+          };
+        }
+        return f;
+      });
+      return { ...row, fields: updatedFields };
+    });
+
+    this._rows.set(updatedRows);
+    sessionStorage.setItem('data', JSON.stringify(updatedRows));
+  }
 
   private mode$ = new BehaviorSubject<'editor' | 'preview'>('editor');
 
@@ -297,33 +378,6 @@ export class Form {
   get currentMode() {
     return this.mode$.value; // instant value if needed
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   //  private _rows$ = new BehaviorSubject<FormRow[]>([
   //   {
@@ -461,9 +515,6 @@ export class Form {
   // }
 }
 
-
-
-
 // @Injectable({ providedIn: 'root' })
 // export class TableService {
 //   private _tables = signal<TableData[]>([]);
@@ -481,8 +532,8 @@ export class Form {
 //   }
 
 //   addColumn(tableId: string) {
-//     this._tables.update(tables => 
-//       tables.map(table => 
+//     this._tables.update(tables =>
+//       tables.map(table =>
 //         table.id === tableId
 //           ? {
 //               ...table,
