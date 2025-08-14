@@ -201,6 +201,10 @@ const TABLE_FIELD_DEFINATION: FieldTypeDefiniation = {
   defaultConfig: {
     label: 'Table',
     required: false,
+    options: [{col : 'aditya' , col_1 : 'lokesh', col_2 : 'neeraj', col_3 : 'mukesh'}],
+    columns : ['col', 'col_1', 'col_2', 'col_3']
+      // always an array of row objects
+    //  // always an array of column keys
   },
   settingsConfig: [
     {
@@ -219,6 +223,8 @@ const TABLE_FIELD_DEFINATION: FieldTypeDefiniation = {
       label: 'Add Column',
     },
   ],
+
+//  columns: ['col', 'col1', 'col2'],
   component: TableField,
 };
 
