@@ -21,9 +21,9 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
-import { Form } from '../../../services/form';
 import { FormFields } from '../../../models/fields';
 import { FormRow } from '../../../models/form';
+import { Form } from '../../../services/form';
 
 @Component({
   selector: 'app-table-field',
@@ -34,183 +34,79 @@ import { FormRow } from '../../../models/form';
     MatButtonModule,
     MatInputModule,
     FormsModule,
+    MatIcon,
   ],
   templateUrl: './table-field.html',
   styleUrl: './table-field.scss',
 })
 export class TableField {
-  ELEMENT_DATA = [];
-  // displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatTableDataSource(this.ELEMENT_DATA);
-  //@Input({ required: true }) activeTab!: 'preview' | 'editor';
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-
-  formServices = inject(Form);
-  //  formConfig = signal<FormRow[]>(this.formServices.rows());
-  //field = input.required
-  sub: any;
-  isEditorMode: boolean = false;
-  getFullObject: any;
+  columnName: string = '';
   field = input.required<FormFields>();
-  //fields = input.required<>();
+  formService = inject(Form);
+  editableColumnNames: string[] = [];
+  editingColumn: any;
+  mode: string = 'editor';
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-  }
-
-  tableForm: FormGroup;
-  columns: { key: string; label: string; isEditing: boolean }[] = [];
-
-  constructor(private fb: FormBuilder) {
-    //console.log(this.fields()?.id);
-    this.getFullObject = this.formServices.rows();
-
-    console.log(this.getFullObject);
-    this.tableForm = this.fb.group({
-      rows: this.fb.array([]),
+  constructor() {
+    this.formService.getMode().subscribe((mode) => {
+      console.log('Mode changed:', mode);
+      this.mode = mode;
     });
-
-    this.sub = this.formServices.getMode().subscribe((mode) => {
-      this.isEditorMode = mode === 'editor';
-    });
-
-    this.addColumn();
-    this.addRow();
   }
 
-  // @Input() field: any;
-  // @Input() form: FormGroup;
-
-  get displayedColumns(): string[] {
-    return this.field().options?.length
-      ? Object.keys(this.field().options[0])
-      : [];
+  ngOnInit() {
+    const cols = this.field().columns ?? [];
+    this.editableColumnNames = [...cols];
+    this.editingColumn = new Array(cols.length).fill(false);
   }
 
-  // get dataSource() {
-  //   return this.field().options || [];
-  // }
-
-  get rows(): FormArray {
-    return this.tableForm.get('rows') as FormArray;
+  startEditing(index: number) {
+    this.editingColumn[index] = true;
   }
 
-  addColumn(fieldId?: any, columnId?: any) {
-    console.log(fieldId, columnId);
-    const key = `col_${this.columns.length + 1}`;
-    const label = `Column ${this.columns.length + 1}`;
-    this.columns.push({ key, label, isEditing: false });
-
-    this.rows.controls.forEach((row: any) => {
-      row.addControl(key, new FormControl(''));
-    });
-
-    // if (fieldId != undefined) {
-    //   this.getFullObject.forEach((ele: any) => {
-    //     if (ele.id == fieldId) {
-    //       const updatedField = [...ele.field];
-    //       updatedField.map((field: any) => {
-    //         if (field.type == 'table') {
-    //           let obj = {
-    //             ...field,
-    //             options: [...this.columns],
-    //           };
-    //           return obj;
-    //         }
-    //       });
-    //     }
-    //   });
-    // }
-    console.log(this.tableForm.value);
-    const updated = this.getFullObject.map((section: any) => ({
-      ...section,
-      fields: section.fields.map((field: any) => {
-        if (field.type === 'table') {
-          return {
-            ...field,
-            options: {
-              ...this.tableForm.value,
-            },
-          };
-        }
-        return field;
-      }),
-    }));
-
-    // console.log(this.formConfig());
-    this.formServices.updateTableColumnName(fieldId, this.tableForm.value);
+  private syncEditingArray() {
+    const cols = this.field().columns ?? [];
+    this.editingColumn = new Array(cols.length).fill(false);
   }
 
-  removeColumn(index: number) {
-    const key = this.columns[index].key;
-    this.columns.splice(index, 1);
-    this.rows.controls.forEach((row: any) => {
-      row.removeControl(key);
-    });
+  saveColumnName(
+    fieldId: string,
+    oldKey: string,
+    newName: string,
+    index: number
+  ) {
+    if (newName && oldKey !== newName) {
+      this.renameColumn(fieldId, oldKey, newName);
+    }
+    this.editingColumn[index] = false; // hide input
+  }
+  getDisplayedColumns(table: any): string[] {
+    return table.columns.map((c: any) => c.field);
+  }
+
+  addColumn(fieldId: string) {
+    const newKey = `col_${Date.now()}`; // or any naming logic
+    this.formService.addColumnToTableField(fieldId, newKey);
+    this.syncEditingArray();
+  }
+
+  renameColumn(fieldId: string, oldKey: string, newName: string) {
+    if (!newName || oldKey === newName) return;
+
+    this.formService.renameColumnInTableField(fieldId, oldKey, newName);
+    this.syncEditingArray();
+  }
+
+  deleteColumn(fieldId: string, columnKey: string) {
+    this.formService.deleteColumnFromTableField(fieldId, columnKey);
   }
 
   addRow() {
-    const group = this.fb.group({});
-    this.columns.forEach((col) => {
-      group.addControl(col.key, new FormControl(''));
-    });
-    this.rows.push(group);
+    console.log('pico');
+    this.formService.addRowToTableField(this.field().id);
   }
 
-  removeRow(index: number) {
-    this.rows.removeAt(index);
-  }
-
-  editColumn(col: any) {
-    col.isEditing = true;
-  }
-
-  saveColumn(col: any, event: Event) {
-    const input = (event.target as HTMLInputElement)?.value?.trim();
-    if (input) {
-      col.label = input;
-      col.key = input;
-    }
-    col.isEditing = false;
-  }
-
-  updateColumnKeyAndLabel(col: any, newName: string) {
-    const oldKey = col.key;
-    const trimmedKey = newName.trim().replace(/\s+/g, '_'); // convert to valid key
-
-    if (!trimmedKey) {
-      alert('Column name cannot be empty');
-      return;
-    }
-
-    // Check for duplicate key
-    const duplicate = this.columns.find(
-      (c) => c.key === trimmedKey && c !== col
-    );
-    if (duplicate) {
-      alert(`A column with key "${trimmedKey}" already exists.`);
-      return;
-    }
-
-    // Update the column metadata
-    col.key = trimmedKey;
-    col.label = newName.trim();
-    col.isEditing = false;
-
-    // Rename control key in every row
-    this.rows.controls.forEach((row: any) => {
-      const value = row.get(oldKey)?.value;
-      row.removeControl(oldKey);
-      row.addControl(trimmedKey, new FormControl(value));
-    });
-  }
-
-  displayedColumnKeys() {
-    let columnsData = this.columns.map((c) => c.key);
-    return this.columns.map((c) => c.key);
-  }
-
-  submit() {
-    console.log(this.tableForm.value);
+  deleteRow(fieldId: string, rowIndex: number) {
+    this.formService.deleteRowFromTableField(fieldId, rowIndex);
   }
 }

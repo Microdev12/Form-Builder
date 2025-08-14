@@ -204,10 +204,11 @@ const TABLE_FIELD_DEFINATION: FieldTypeDefiniation = {
     label: 'Table',
     required: false,
     options: [
-      { value: 'option1', label: 'Option 1' },
-      { value: 'option2', label: 'Option 2' },
-      { value: 'option3', label: 'Option 3' },
+      { col: 'aditya', col_1: 'lokesh', col_2: 'neeraj', col_3: 'mukesh' },
     ],
+    columns: ['col', 'col_1', 'col_2', 'col_3'],
+    // always an array of row objects
+    //  // always an array of column keys
   },
   settingsConfig: [
     {
@@ -226,6 +227,8 @@ const TABLE_FIELD_DEFINATION: FieldTypeDefiniation = {
       label: 'Add Column',
     },
   ],
+
+  //  columns: ['col', 'col1', 'col2'],
   component: TableField,
 };
 
@@ -297,6 +300,7 @@ const BUTTON_FIELD_DEFINATION: FieldTypeDefiniation = {
   ],
   component: ButtonField,
 };
+
 @Injectable({
   providedIn: 'root',
 })
@@ -308,9 +312,9 @@ export class FieldTypes {
     ['select', SELECT_FIELD_DEFINATION],
     ['radio', RADIO_FIELD_DEFINATION],
     ['date', DATE_FIELD_DEFINATION],
+    ['table', TABLE_FIELD_DEFINATION],
     ['timer', TIMER_FIELD_DEFINATION],
     ['button', BUTTON_FIELD_DEFINATION],
-    ['table', TABLE_FIELD_DEFINATION],
   ]);
 
   constructor() {}
